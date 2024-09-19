@@ -1,7 +1,7 @@
 use crate::cli::{Cli, Commands};
 use clap::Parser;
 use headless_chrome::Browser;
-use scraper::Html;
+use scraper::{Html, Selector};
 
 mod cli;
 
@@ -9,17 +9,24 @@ fn main() -> Result<(), anyhow::Error> {
     let cli = Cli::parse();
 
     match cli.command {
-        Commands::Fetch { url } => {
-            let document = match fetch(url.as_str()) {
+        Commands::Fetch { url, selector } => {
+            let document = match fetch(&url) {
                 Ok(dom) => dom,
                 Err(e) => {
                     return Err(e);
                 }
             };
 
-            std::fs::write("index.html", &document)?;
+            let html = Html::parse_document(&document);
 
-            let _html = Html::parse_document(document.as_str());
+            let selector = Selector::parse(&selector).expect("Could not parse selector");
+
+            println!(
+                "{:?}",
+                html.select(&selector)
+                    .map(|element| element.text().collect())
+                    .collect::<Vec<String>>()
+            );
         }
     }
 
