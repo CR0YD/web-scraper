@@ -21,7 +21,7 @@ pub fn parse(content: &str, selector: &str) -> Result<String, Error> {
 
     Ok(html
         .select(&selector)
-        .map(|element| element.text().collect())
+        .map(|e| e.html())
         .collect::<Vec<String>>()
-        .join(""))
+        .join("\n"))
 }
