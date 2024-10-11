@@ -9,7 +9,11 @@ fn main() -> Result<(), anyhow::Error> {
     let cli = Cli::parse();
 
     match cli.command {
-        Commands::Fetch { url, selector } => {
+        Commands::Fetch {
+            url,
+            selector,
+            output,
+        } => {
             let content = match fetch(&url) {
                 Ok(dom) => dom,
                 Err(e) => {
@@ -17,7 +21,7 @@ fn main() -> Result<(), anyhow::Error> {
                 }
             };
 
-            println!("{}", parse(&content, &selector)?);
+            println!("{}", parse(&content, &selector, output)?);
         }
     }
 
